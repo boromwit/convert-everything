@@ -1,0 +1,975 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Convert Everything — เว็บแปลงหน่วยครบวงจร</title>
+<meta name="description" content="เว็บไซต์สำหรับแปลงหน่วยที่ครอบคลุมหน่วยหลายแบบ ทั้งหน่วย Universal และหน่วยที่นิยมใช้ในประเทศไทย">
+<style>
+:root {
+  --blue-900: #1b2559;
+  --blue-800: #223576;
+  --blue-700: #2a41a0;
+  --blue-600: #3454c7;
+  --blue-500: #4767e0;
+  --blue-100: #e8ecfb;
+  --blue-50: #f4f6fd;
+  --ink: #1c2333;
+  --ink-soft: #5a6178;
+  --border: #e3e6ef;
+  --bg: #f5f7fb;
+  --white: #ffffff;
+  --accent-text: #223576;
+  --radius-lg: 20px;
+  --radius-md: 12px;
+  --shadow-card: 0 20px 45px -20px rgba(27, 37, 89, 0.35);
+  --shadow-soft: 0 8px 24px -12px rgba(27, 37, 89, 0.18);
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --blue-900: #0f1730;
+  --blue-800: #16204a;
+  --blue-700: #26399a;
+  --blue-600: #3454c7;
+  --blue-500: #5b7bef;
+  --blue-100: #1e2747;
+  --blue-50: #171f38;
+  --ink: #e7eaf5;
+  --ink-soft: #a7adc4;
+  --border: #2a3355;
+  --bg: #0c1224;
+  --white: #131a33;
+  --accent-text: #93a9ff;
+  --shadow-card: 0 20px 45px -20px rgba(0, 0, 0, 0.6);
+  --shadow-soft: 0 8px 24px -12px rgba(0, 0, 0, 0.45);
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --blue-900: #0f1730;
+    --blue-800: #16204a;
+    --blue-700: #26399a;
+    --blue-600: #3454c7;
+    --blue-500: #5b7bef;
+    --blue-100: #1e2747;
+    --blue-50: #171f38;
+    --ink: #e7eaf5;
+    --ink-soft: #a7adc4;
+    --border: #2a3355;
+    --bg: #0c1224;
+    --white: #131a33;
+    --accent-text: #93a9ff;
+    --shadow-card: 0 20px 45px -20px rgba(0, 0, 0, 0.6);
+    --shadow-soft: 0 8px 24px -12px rgba(0, 0, 0, 0.45);
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Leelawadee UI", "Segoe UI", "Tahoma", "Sarabun", sans-serif;
+  scroll-behavior: smooth;
+}
+
+.container {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 68px;
+  gap: 12px;
+}
+
+.logo {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--accent-text);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.logo span { color: var(--blue-500); }
+
+.main-nav ul {
+  display: flex;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-link {
+  display: inline-block;
+  padding: 8px 14px;
+  border-radius: 999px;
+  color: var(--ink-soft);
+  text-decoration: none;
+  font-size: 0.92rem;
+  font-weight: 600;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.nav-link:hover { background: var(--blue-50); color: var(--blue-700); }
+.nav-link.active { background: var(--blue-600); color: var(--white); }
+
+.header-actions { display: flex; align-items: center; gap: 10px; }
+
+.theme-toggle {
+  border: 1px solid var(--border);
+  background: var(--blue-50);
+  color: var(--blue-700);
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.theme-toggle:hover { background: var(--blue-100); }
+
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  cursor: pointer;
+  color: var(--blue-800);
+}
+
+.hero {
+  background: linear-gradient(135deg, var(--blue-900), var(--blue-600));
+  color: #ffffff;
+  padding: 56px 0 120px;
+  text-align: center;
+}
+.hero h1 {
+  margin: 0 0 12px;
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+}
+.hero p {
+  margin: 0;
+  opacity: 0.85;
+  font-size: 1rem;
+}
+
+.converter-section {
+  margin-top: -84px;
+  display: grid;
+  gap: 24px;
+  padding-bottom: 40px;
+}
+
+.converter-card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 24px;
+}
+
+.category-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  background: var(--blue-50);
+  border-radius: 999px;
+  padding: 6px;
+  margin-bottom: 24px;
+}
+
+.tab {
+  flex: 1 1 auto;
+  min-width: 88px;
+  border: none;
+  background: transparent;
+  padding: 10px 12px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.86rem;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.tab.active {
+  background: var(--blue-600);
+  color: #ffffff;
+  box-shadow: var(--shadow-soft);
+}
+
+.conversion-box {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: end;
+  gap: 16px;
+}
+
+.field label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  margin-bottom: 8px;
+}
+
+.field-row {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--blue-50);
+}
+
+.field-row input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  padding: 14px;
+  font-size: 1.05rem;
+  color: var(--ink);
+  outline: none;
+  font-variant-numeric: tabular-nums;
+}
+
+.field-row input[readonly] {
+  font-weight: 700;
+  color: var(--accent-text);
+}
+
+.field-row select {
+  border: none;
+  border-left: 1px solid var(--border);
+  background: var(--white);
+  color: var(--ink);
+  padding: 0 10px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
+  max-width: 46%;
+}
+
+.swap-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: var(--blue-600);
+  color: #ffffff;
+  font-size: 1.2rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.15s ease, background 0.15s ease;
+  margin-bottom: 2px;
+}
+.swap-btn:hover { background: var(--blue-700); }
+@media (prefers-reduced-motion: no-preference) {
+  .swap-btn:hover { transform: rotate(180deg); }
+}
+
+.result-display {
+  margin-top: 24px;
+  background: var(--blue-900);
+  color: #ffffff;
+  border-radius: var(--radius-md);
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.result-value {
+  font-size: clamp(1.5rem, 3vw, 2.1rem);
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.copy-btn {
+  border: 1px solid rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.08);
+  color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: background 0.15s ease;
+}
+.copy-btn:hover { background: rgba(255,255,255,0.2); }
+.copy-btn.copied { background: #2fae6b; border-color: #2fae6b; }
+
+.rate-note {
+  margin: 10px 2px 0;
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+}
+
+.history-card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  padding: 20px 24px 8px;
+}
+
+.history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.history-header h2 { font-size: 1.05rem; margin: 0; }
+
+.clear-btn {
+  border: 1px solid var(--border);
+  background: var(--white);
+  color: var(--ink-soft);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.clear-btn:hover { color: #e0685a; border-color: #6b3730; }
+
+.table-wrap { overflow-x: auto; }
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+.history-table th {
+  text-align: left;
+  color: var(--ink-soft);
+  font-weight: 600;
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.history-table td {
+  padding: 12px 8px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.history-table .empty-row td {
+  text-align: center;
+  color: var(--ink-soft);
+  padding: 24px 8px;
+}
+.row-copy-btn {
+  border: none;
+  background: var(--blue-50);
+  color: var(--blue-700);
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.row-copy-btn:hover { background: var(--blue-100); }
+
+.units-info { padding: 24px 24px 64px; }
+.units-info h2 {
+  text-align: center;
+  margin-bottom: 24px;
+  font-size: 1.3rem;
+}
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+.info-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 18px;
+}
+.info-card h3 {
+  margin: 0 0 8px;
+  font-size: 0.98rem;
+  color: var(--accent-text);
+}
+.info-card p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  line-height: 1.5;
+}
+
+.site-footer {
+  background: var(--blue-900);
+  color: rgba(255,255,255,0.85);
+  padding: 40px 0;
+}
+.footer-inner {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 32px;
+}
+.site-footer h3 { color: #ffffff; margin: 0 0 8px; }
+.site-footer h4 { color: #ffffff; margin: 0 0 10px; font-size: 0.95rem; }
+.site-footer p { font-size: 0.85rem; line-height: 1.6; margin: 0; }
+.members {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 0.85rem;
+  line-height: 1.9;
+  opacity: 0.9;
+}
+
+a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible {
+  outline: 2px solid var(--blue-500);
+  outline-offset: 2px;
+}
+
+@media (max-width: 860px) {
+  .info-grid { grid-template-columns: repeat(2, 1fr); }
+  .footer-inner { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 720px) {
+  .main-nav { display: none; }
+  .menu-toggle { display: block; }
+  .main-nav.open {
+    display: block;
+    position: absolute;
+    top: 68px;
+    left: 0;
+    right: 0;
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 24px 20px;
+  }
+  .main-nav.open ul {
+    flex-direction: column;
+    gap: 4px;
+  }
+  .conversion-box {
+    grid-template-columns: 1fr;
+  }
+  .swap-btn {
+    justify-self: center;
+    transform: rotate(90deg);
+    margin: 4px 0;
+  }
+  .swap-btn:hover { transform: rotate(270deg); }
+  .field-row select { max-width: 50%; }
+  .theme-toggle span.label-text { display: none; }
+}
+
+@media (max-width: 480px) {
+  .info-grid { grid-template-columns: 1fr; }
+  .hero { padding: 40px 0 100px; }
+}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <div class="container header-inner">
+    <a href="#" class="logo">🔄 Convert <span>Everything</span></a>
+    <nav class="main-nav" id="mainNav">
+      <ul>
+        <li><a href="#" class="nav-link active" data-category="length">ความยาว</a></li>
+        <li><a href="#" class="nav-link" data-category="weight">น้ำหนัก</a></li>
+        <li><a href="#" class="nav-link" data-category="temperature">อุณหภูมิ</a></li>
+        <li><a href="#" class="nav-link" data-category="area">พื้นที่</a></li>
+        <li><a href="#" class="nav-link" data-category="volume">ปริมาตร</a></li>
+        <li><a href="#" class="nav-link" data-category="currency">สกุลเงิน</a></li>
+      </ul>
+    </nav>
+    <div class="header-actions">
+      <button class="theme-toggle" id="themeToggle" type="button"><span class="label-text">โหมด: </span>อัตโนมัติ</button>
+      <button class="menu-toggle" id="menuToggle" aria-label="เปิดเมนู">☰</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="container">
+      <h1>แปลงหน่วยทุกอย่าง ในที่เดียว</h1>
+      <p>ครอบคลุมหน่วยสากล (Universal) และหน่วยที่นิยมใช้ในประเทศไทย — รวดเร็ว แม่นยำ ใช้งานง่าย</p>
+    </div>
+  </section>
+
+  <section class="converter-section container">
+    <div class="converter-card">
+      <div class="category-tabs" id="categoryTabs">
+        <button class="tab active" data-category="length">ความยาว</button>
+        <button class="tab" data-category="weight">น้ำหนัก</button>
+        <button class="tab" data-category="temperature">อุณหภูมิ</button>
+        <button class="tab" data-category="area">พื้นที่</button>
+        <button class="tab" data-category="volume">ปริมาตร</button>
+        <button class="tab" data-category="currency">สกุลเงิน</button>
+      </div>
+
+      <div class="conversion-box">
+        <div class="field from-field">
+          <label for="fromValue">จาก (From)</label>
+          <div class="field-row">
+            <input type="number" id="fromValue" value="1" step="any" placeholder="กรอกตัวเลข">
+            <select id="fromUnit"></select>
+          </div>
+        </div>
+
+        <button class="swap-btn" id="swapBtn" title="สลับหน่วย" aria-label="สลับหน่วย">⇄</button>
+
+        <div class="field to-field">
+          <label for="toUnit">เป็น (To)</label>
+          <div class="field-row">
+            <input type="text" id="toValue" readonly aria-label="ผลลัพธ์">
+            <select id="toUnit"></select>
+          </div>
+        </div>
+      </div>
+
+      <div class="result-display" id="resultDisplay">
+        <span class="result-value" id="resultValue">—</span>
+        <button class="copy-btn" id="copyResultBtn">📋 คัดลอก</button>
+      </div>
+      <p class="rate-note" id="rateNote"></p>
+    </div>
+
+    <div class="history-card">
+      <div class="history-header">
+        <h2>ประวัติการแปลงล่าสุด</h2>
+        <button class="clear-btn" id="clearHistoryBtn">ล้างประวัติ</button>
+      </div>
+      <div class="table-wrap">
+        <table class="history-table" id="historyTable">
+          <thead>
+            <tr><th>หมวดหมู่</th><th>จาก</th><th>เป็น</th><th>เวลา</th><th></th></tr>
+          </thead>
+          <tbody id="historyBody">
+            <tr class="empty-row"><td colspan="5">ยังไม่มีประวัติการแปลง</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="units-info container">
+    <h2>หน่วยที่รองรับในเว็บไซต์</h2>
+    <div class="info-grid">
+      <div class="info-card">
+        <h3>Imperial &amp; Metric / SI</h3>
+        <p>ความยาว น้ำหนัก พื้นที่ ปริมาตร เช่น เมตร กิโลเมตร ฟุต เอเคอร์ เป็นต้น</p>
+      </div>
+      <div class="info-card">
+        <h3>อุณหภูมิ</h3>
+        <p>องศาเซลเซียส (°C) องศาฟาเรนไฮต์ (°F) เคลวิน (K) และองศาโรเมอร์ (°Ré)</p>
+      </div>
+      <div class="info-card">
+        <h3>หน่วยไทย</h3>
+        <p>งาน ไร่ นิ้ว คืบ ศอก วา เส้น โยชน์ ตำลึง ชั่ง และอื่น ๆ ที่นิยมใช้ในประเทศไทย</p>
+      </div>
+      <div class="info-card">
+        <h3>สกุลเงิน</h3>
+        <p>รองรับมากกว่า 20 สกุลเงิน เช่น USD, EUR, GBP, JPY, THB, KRW และอื่น ๆ</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <div>
+      <h3>Convert Everything</h3>
+      <p>เว็บไซต์สำหรับแปลงหน่วยที่ครอบคลุมหน่วยหลายแบบ ทั้งหน่วย Universal และหน่วยที่นิยมใช้ในประเทศไทย</p>
+    </div>
+    <div>
+      <h4>สมาชิกผู้จัดทำ</h4>
+      <ul class="members">
+        <li>นายนิพพิชฌน์ สังข์โพธิ์ — 6601053630101</li>
+        <li>นายบรมวิชญ์ อนุชา — 6601053630127</li>
+        <li>นายภูวเนศวร์ เสนตำ — 6601053630143</li>
+        <li>นายวรชาติ แก้วเจริญผล — 6601053630160</li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  const CATEGORIES = {
+    length: {
+      label: "ความยาว", kind: "linear",
+      units: {
+        mm: { name: "มิลลิเมตร (mm)", factor: 0.001 },
+        cm: { name: "เซนติเมตร (cm)", factor: 0.01 },
+        m: { name: "เมตร (m)", factor: 1 },
+        km: { name: "กิโลเมตร (km)", factor: 1000 },
+        in: { name: "นิ้ว - Imperial (in)", factor: 0.0254 },
+        ft: { name: "ฟุต (ft)", factor: 0.3048 },
+        yd: { name: "หลา (yd)", factor: 0.9144 },
+        mi: { name: "ไมล์ (mi)", factor: 1609.344 },
+        thai_niu: { name: "นิ้ว - ไทย", factor: 0.0208333 },
+        thai_kheub: { name: "คืบ", factor: 0.25 },
+        thai_sok: { name: "ศอก", factor: 0.5 },
+        thai_wa: { name: "วา", factor: 2 },
+        thai_sen: { name: "เส้น", factor: 40 },
+        thai_yot: { name: "โยชน์", factor: 16000 },
+      },
+      defaultFrom: "mi", defaultTo: "km",
+    },
+    weight: {
+      label: "น้ำหนัก", kind: "linear",
+      units: {
+        mg: { name: "มิลลิกรัม (mg)", factor: 0.001 },
+        g: { name: "กรัม (g)", factor: 1 },
+        kg: { name: "กิโลกรัม (kg)", factor: 1000 },
+        t: { name: "ตัน - เมตริก (t)", factor: 1000000 },
+        oz: { name: "ออนซ์ (oz)", factor: 28.3495 },
+        lb: { name: "ปอนด์ (lb)", factor: 453.592 },
+        stone: { name: "สโตน (st)", factor: 6350.29 },
+        thai_salueng: { name: "สลึง", factor: 3.75 },
+        thai_baht: { name: "บาท (น้ำหนัก)", factor: 15 },
+        thai_tamlueng: { name: "ตำลึง", factor: 60 },
+        thai_chang: { name: "ชั่ง", factor: 1200 },
+      },
+      defaultFrom: "kg", defaultTo: "lb",
+    },
+    area: {
+      label: "พื้นที่", kind: "linear",
+      units: {
+        mm2: { name: "ตร.มิลลิเมตร (mm²)", factor: 0.000001 },
+        cm2: { name: "ตร.เซนติเมตร (cm²)", factor: 0.0001 },
+        m2: { name: "ตารางเมตร (m²)", factor: 1 },
+        km2: { name: "ตร.กิโลเมตร (km²)", factor: 1000000 },
+        sqin: { name: "ตร.นิ้ว (sq in)", factor: 0.00064516 },
+        sqft: { name: "ตร.ฟุต (sq ft)", factor: 0.092903 },
+        sqyd: { name: "ตร.หลา (sq yd)", factor: 0.836127 },
+        acre: { name: "เอเคอร์ (acre)", factor: 4046.86 },
+        sqmi: { name: "ตร.ไมล์ (sq mi)", factor: 2589988.11 },
+        thai_sqwa: { name: "ตารางวา", factor: 4 },
+        thai_ngan: { name: "งาน", factor: 400 },
+        thai_rai: { name: "ไร่", factor: 1600 },
+      },
+      defaultFrom: "thai_rai", defaultTo: "m2",
+    },
+    volume: {
+      label: "ปริมาตร", kind: "linear",
+      units: {
+        ml: { name: "มิลลิลิตร (mL)", factor: 0.001 },
+        l: { name: "ลิตร (L)", factor: 1 },
+        m3: { name: "ลูกบาศก์เมตร (m³)", factor: 1000 },
+        cm3: { name: "ลูกบาศก์เซนติเมตร (cm³)", factor: 0.001 },
+        floz: { name: "ฟลูอิดออนซ์ (fl oz)", factor: 0.0295735 },
+        cup: { name: "ถ้วย (cup)", factor: 0.24 },
+        pint: { name: "ไพน์ (pint)", factor: 0.473176 },
+        quart: { name: "ควอร์ต (quart)", factor: 0.946353 },
+        gallon: { name: "แกลลอน (gal)", factor: 3.78541 },
+      },
+      defaultFrom: "l", defaultTo: "gallon",
+    },
+    temperature: {
+      label: "อุณหภูมิ", kind: "temperature",
+      units: {
+        C: { name: "เซลเซียส (°C)" },
+        F: { name: "ฟาเรนไฮต์ (°F)" },
+        K: { name: "เคลวิน (K)" },
+        Re: { name: "โรเมอร์ (°Ré)" },
+      },
+      defaultFrom: "C", defaultTo: "F",
+    },
+    currency: {
+      label: "สกุลเงิน", kind: "currency",
+      units: {
+        USD: { name: "ดอลลาร์สหรัฐ (USD)" }, EUR: { name: "ยูโร (EUR)" },
+        GBP: { name: "ปอนด์สเตอร์ลิง (GBP)" }, JPY: { name: "เยนญี่ปุ่น (JPY)" },
+        AUD: { name: "ดอลลาร์ออสเตรเลีย (AUD)" }, CAD: { name: "ดอลลาร์แคนาดา (CAD)" },
+        CHF: { name: "ฟรังก์สวิส (CHF)" }, CNY: { name: "หยวนจีน (CNY)" },
+        SGD: { name: "ดอลลาร์สิงคโปร์ (SGD)" }, THB: { name: "บาทไทย (THB)" },
+        KRW: { name: "วอนเกาหลีใต้ (KRW)" }, HKD: { name: "ดอลลาร์ฮ่องกง (HKD)" },
+        NZD: { name: "ดอลลาร์นิวซีแลนด์ (NZD)" }, IDR: { name: "รูเปียห์อินโดนีเซีย (IDR)" },
+        MYR: { name: "ริงกิตมาเลเซีย (MYR)" }, PHP: { name: "เปโซฟิลิปปินส์ (PHP)" },
+        VND: { name: "ดองเวียดนาม (VND)" }, INR: { name: "รูปีอินเดีย (INR)" },
+        MXN: { name: "เปโซเม็กซิโก (MXN)" }, BRL: { name: "เรอัลบราซิล (BRL)" },
+      },
+      defaultFrom: "USD", defaultTo: "THB",
+    },
+  };
+
+  const FALLBACK_RATES = {
+    USD: 1, EUR: 0.92, GBP: 0.78, JPY: 149, AUD: 1.52, CAD: 1.36, CHF: 0.88,
+    CNY: 7.24, SGD: 1.34, THB: 34.5, KRW: 1370, HKD: 7.82, NZD: 1.64,
+    IDR: 15800, MYR: 4.47, PHP: 56.5, VND: 25400, INR: 83.3, MXN: 18.3, BRL: 5.6,
+  };
+
+  let liveRates = null;
+  let ratesUpdatedAt = null;
+  let currentCategory = "length";
+
+  const TEMP_TO_CELSIUS = {
+    C: (v) => v, F: (v) => (v - 32) * (5 / 9), K: (v) => v - 273.15, Re: (v) => v * (5 / 4),
+  };
+  const CELSIUS_TO = {
+    C: (v) => v, F: (v) => v * (9 / 5) + 32, K: (v) => v + 273.15, Re: (v) => v * (4 / 5),
+  };
+
+  const fromValueEl = document.getElementById("fromValue");
+  const toValueEl = document.getElementById("toValue");
+  const fromUnitEl = document.getElementById("fromUnit");
+  const toUnitEl = document.getElementById("toUnit");
+  const resultValueEl = document.getElementById("resultValue");
+  const rateNoteEl = document.getElementById("rateNote");
+  const swapBtn = document.getElementById("swapBtn");
+  const copyResultBtn = document.getElementById("copyResultBtn");
+  const clearHistoryBtn = document.getElementById("clearHistoryBtn");
+  const historyBody = document.getElementById("historyBody");
+  const menuToggle = document.getElementById("menuToggle");
+  const mainNav = document.getElementById("mainNav");
+  const themeToggle = document.getElementById("themeToggle");
+
+  const tabButtons = document.querySelectorAll(".category-tabs .tab");
+  const navLinks = document.querySelectorAll(".nav-link");
+
+  function unitSymbol(category, unitKey) {
+    const name = category.units[unitKey].name;
+    const match = name.match(/\(([^)]+)\)\s*$/);
+    return match ? match[1] : name;
+  }
+
+  function populateUnitSelects(categoryKey) {
+    const category = CATEGORIES[categoryKey];
+    const unitKeys = Object.keys(category.units);
+    [fromUnitEl, toUnitEl].forEach((select) => {
+      select.innerHTML = "";
+      unitKeys.forEach((key) => {
+        const opt = document.createElement("option");
+        opt.value = key;
+        opt.textContent = category.units[key].name;
+        select.appendChild(opt);
+      });
+    });
+    fromUnitEl.value = category.defaultFrom;
+    toUnitEl.value = category.defaultTo;
+  }
+
+  function updateRateNote() {
+    if (currentCategory !== "currency") { rateNoteEl.textContent = ""; return; }
+    if (liveRates) {
+      const when = ratesUpdatedAt
+        ? ratesUpdatedAt.toLocaleString("th-TH", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) + " น."
+        : "";
+      rateNoteEl.textContent = "อัตราแลกเปลี่ยนแบบเรียลไทม์ (อัปเดตจากอินเทอร์เน็ต)" + (when ? " — อัปเดตล่าสุดเมื่อ " + when : "");
+    } else {
+      rateNoteEl.textContent = "อัตราคงที่โดยประมาณ (ไม่พบการเชื่อมต่ออินเทอร์เน็ต)";
+    }
+  }
+
+  function setActiveCategory(categoryKey) {
+    currentCategory = categoryKey;
+    tabButtons.forEach((btn) => btn.classList.toggle("active", btn.dataset.category === categoryKey));
+    navLinks.forEach((link) => link.classList.toggle("active", link.dataset.category === categoryKey));
+    populateUnitSelects(categoryKey);
+    fromValueEl.value = 1;
+    updateRateNote();
+    convert();
+  }
+
+  function formatNumber(value, categoryKey) {
+    if (!isFinite(value)) return "—";
+    const abs = Math.abs(value);
+    let digits = 4;
+    if (categoryKey === "currency" || categoryKey === "temperature") digits = 2;
+    if (abs !== 0 && abs < 0.001) digits = 6;
+    return value.toLocaleString("en-US", { maximumFractionDigits: digits, minimumFractionDigits: 0 });
+  }
+
+  function convert() {
+    const category = CATEGORIES[currentCategory];
+    const rawInput = fromValueEl.value;
+    const input = parseFloat(rawInput);
+
+    if (rawInput === "" || isNaN(input)) {
+      toValueEl.value = "";
+      resultValueEl.textContent = "—";
+      return null;
+    }
+
+    const fromUnit = fromUnitEl.value;
+    const toUnit = toUnitEl.value;
+    let result;
+
+    if (category.kind === "linear") {
+      const baseValue = input * category.units[fromUnit].factor;
+      result = baseValue / category.units[toUnit].factor;
+    } else if (category.kind === "temperature") {
+      result = CELSIUS_TO[toUnit](TEMP_TO_CELSIUS[fromUnit](input));
+    } else if (category.kind === "currency") {
+      const rates = liveRates || FALLBACK_RATES;
+      result = (input / rates[fromUnit]) * rates[toUnit];
+    }
+
+    const formatted = formatNumber(result, currentCategory);
+    toValueEl.value = formatted;
+
+    const fromSym = unitSymbol(category, fromUnit);
+    const toSym = unitSymbol(category, toUnit);
+    resultValueEl.textContent = `${formatNumber(input, currentCategory)} ${fromSym} = ${formatted} ${toSym}`;
+
+    return { input, result, formatted, fromUnit, toUnit, fromSym, toSym };
+  }
+
+  async function loadLiveRates() {
+    try {
+      const res = await fetch("https://open.er-api.com/v6/latest/USD");
+      if (!res.ok) throw new Error("bad response");
+      const data = await res.json();
+      if (data && data.result === "success" && data.rates) {
+        liveRates = data.rates;
+        ratesUpdatedAt = data.time_last_update_unix ? new Date(data.time_last_update_unix * 1000) : new Date();
+        updateRateNote();
+        if (currentCategory === "currency") convert();
+      }
+    } catch (err) {
+      updateRateNote();
+    }
+  }
+
+  const HISTORY_KEY = "transferEverythingHistory";
+  const HISTORY_LIMIT = 10;
+
+  function loadHistory() {
+    try { return JSON.parse(localStorage.getItem(HISTORY_KEY)) || []; }
+    catch { return []; }
+  }
+  function saveHistory(list) { localStorage.setItem(HISTORY_KEY, JSON.stringify(list)); }
+
+  function addHistoryEntry(entry) {
+    const list = loadHistory();
+    list.unshift(entry);
+    saveHistory(list.slice(0, HISTORY_LIMIT));
+    renderHistory();
+  }
+
+  function renderHistory() {
+    const list = loadHistory();
+    historyBody.innerHTML = "";
+    if (list.length === 0) {
+      historyBody.innerHTML = '<tr class="empty-row"><td colspan="5">ยังไม่มีประวัติการแปลง</td></tr>';
+      return;
+    }
+    list.forEach((item) => {
+      const tr = document.createElement("tr");
+      const cat = CATEGORIES[item.category];
+      tr.innerHTML =
+        "<td>" + (cat ? cat.label : item.category) + "</td>" +
+        "<td>" + item.fromText + "</td>" +
+        "<td>" + item.toText + "</td>" +
+        "<td>" + item.time + "</td>" +
+        '<td><button class="row-copy-btn" data-copy="' + item.toText.replace(/"/g, "&quot;") + '">คัดลอก</button></td>';
+      historyBody.appendChild(tr);
+    });
+  }
+
+  function recordCurrentConversion() {
+    const data = convert();
+    if (!data) return;
+    const now = new Date();
+    const time = now.toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" });
+    addHistoryEntry({
+      category: currentCategory,
+      fromText: `${formatNumber(data.input, currentCategory)} ${data.fromSym}`,
+      toText: `${data.formatted} ${data.toSym}`,
+      time,
+    });
+  }
+
+  async function copyText(text, btn) {
+    try { await navigator.clipboard.writeText(text); }
+    catch {
+      const temp = document.createElement("textarea");
+      temp.value = text;
+      document.body.appendChild(temp);
+      temp.select();
+      document.execCommand("copy");
+      document.body.removeChild(temp);
+    }
+    if (btn) {
+      const original = btn.textContent;
+      btn.textContent = "คัดลอกแล้ว ✓";
+      btn.classList.add("copied");
+      setTimeout(() => { btn.textContent = original; btn.classList.remove("copied"); }, 1500);
+    }
+  }
+
+  tabButtons.forEach((btn) => btn.addEventListener("click", () => setActiveCategory(btn.dataset.category)));
+  navLinks.forEach((link) => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      setActiveCategory(link.dataset.category);
+      mainNav.classList.remove("open");
+    });
+  });
+
+  fromValueEl.addEventListener("input", convert);
+  fromValueEl.addEventListener("change", recordCurrentConversion);
+  fromUnitEl.addEventListener("change", () => { convert(); recordCurrentConversion(); });
+  toUnitEl.addEventListener("change", () => { convert(); recordCurrentConversion(); });
+
+  swapBtn.addEventListener("click", () => {
+    const temp = fromUnitEl.value;
+    fromUnitEl.value = toUnitEl.value;
+    toUnitEl.value = temp;
+    convert();
+    recordCurrentConversion();
+  });
+
+  copyResultBtn.addEventListener("click", () => copyText(toValueEl.value, copyResultBtn));
+
+  historyBody.addEventListener("click", (e) => {
+    const btn = e.target.closest(".row-copy-btn");
+    if (!btn) return;
+    copyText(btn.dataset.copy, btn);
+  });
+
+  clearHistoryBtn.addEventListener("click", () => { saveHistory([]); renderHistory(); });
+
+  menuToggle.addEventListener("click", () => mainNav.classList.toggle("open"));
+
+  themeToggle.addEventListener("click", () => {
+    const root = document.documentElement;
+    const current = root.getAttribute("data-theme");
+    let next;
+    if (!current) {
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      next = prefersDark ? "light" : "dark";
+    } else if (current === "dark") {
+      next = "light";
+    } else {
+      next = null;
+    }
+    if (next) root.setAttribute("data-theme", next); else root.removeAttribute("data-theme");
+    themeToggle.lastChild.textContent = next === "dark" ? "มืด" : next === "light" ? "สว่าง" : "อัตโนมัติ";
+  });
+
+  setActiveCategory("length");
+  renderHistory();
+  loadLiveRates();
+})();
+</script>
+</body>
+</html>
