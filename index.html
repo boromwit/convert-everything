@@ -317,8 +317,30 @@ html, body {
 .copy-btn:hover { background: rgba(255,255,255,0.2); }
 .copy-btn.copied { background: #2fae6b; border-color: #2fae6b; }
 
-.rate-note {
+.rate-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
   margin: 10px 2px 0;
+}
+.rate-row[hidden] { display: none; }
+.refresh-btn {
+  border: 1px solid var(--border);
+  background: var(--blue-50);
+  color: var(--blue-700);
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.refresh-btn:hover { background: var(--blue-100); }
+.refresh-btn:disabled { opacity: 0.6; cursor: wait; }
+.rate-note {
+  margin: 0;
   font-size: 0.78rem;
   color: var(--ink-soft);
 }
@@ -548,7 +570,10 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
         <span class="result-value" id="resultValue">—</span>
         <button class="copy-btn" id="copyResultBtn">📋 คัดลอก</button>
       </div>
-      <p class="rate-note" id="rateNote"></p>
+      <div class="rate-row" id="rateRow" hidden>
+        <p class="rate-note" id="rateNote"></p>
+        <button class="refresh-btn" id="refreshRatesBtn" type="button">🔄 รีเฟรชอัตราแลกเปลี่ยน</button>
+      </div>
     </div>
 
     <div class="history-card">
@@ -734,6 +759,8 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
   const toUnitEl = document.getElementById("toUnit");
   const resultValueEl = document.getElementById("resultValue");
   const rateNoteEl = document.getElementById("rateNote");
+  const rateRowEl = document.getElementById("rateRow");
+  const refreshRatesBtn = document.getElementById("refreshRatesBtn");
   const swapBtn = document.getElementById("swapBtn");
   const copyResultBtn = document.getElementById("copyResultBtn");
   const clearHistoryBtn = document.getElementById("clearHistoryBtn");
@@ -768,6 +795,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
   }
 
   function updateRateNote() {
+    rateRowEl.hidden = currentCategory !== "currency";
     if (currentCategory !== "currency") { rateNoteEl.textContent = ""; return; }
     if (liveRates) {
       const when = ratesUpdatedAt
@@ -834,18 +862,28 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
   }
 
   async function loadLiveRates() {
+    refreshRatesBtn.disabled = true;
+    refreshRatesBtn.textContent = "⏳ กำลังโหลด...";
     try {
-      const res = await fetch("https://open.er-api.com/v6/latest/USD");
+      const res = await fetch("https://open.er-api.com/v6/latest/USD", { cache: "no-store" });
       if (!res.ok) throw new Error("bad response");
       const data = await res.json();
       if (data && data.result === "success" && data.rates) {
         liveRates = data.rates;
-        ratesUpdatedAt = data.time_last_update_unix ? new Date(data.time_last_update_unix * 1000) : new Date();
+        ratesUpdatedAt = new Date(); // เวลาปัจจุบันที่ดึงอัตราสำเร็จ
         updateRateNote();
         if (currentCategory === "currency") convert();
+      } else {
+        throw new Error("invalid data");
       }
     } catch (err) {
       updateRateNote();
+      if (liveRates && currentCategory === "currency") {
+        rateNoteEl.textContent += " (รีเฟรชไม่สำเร็จ ใช้อัตราล่าสุดที่ดึงได้)";
+      }
+    } finally {
+      refreshRatesBtn.disabled = false;
+      refreshRatesBtn.textContent = "🔄 รีเฟรชอัตราแลกเปลี่ยน";
     }
   }
 
@@ -939,6 +977,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
   });
 
   copyResultBtn.addEventListener("click", () => copyText(toValueEl.value, copyResultBtn));
+  refreshRatesBtn.addEventListener("click", loadLiveRates);
 
   historyBody.addEventListener("click", (e) => {
     const btn = e.target.closest(".row-copy-btn");
